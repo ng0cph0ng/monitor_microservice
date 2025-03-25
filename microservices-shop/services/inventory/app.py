@@ -2,17 +2,27 @@ from fastapi import FastAPI, HTTPException
 
 app = FastAPI()
 
-inventory = {"item_1": 10, "item_2": 5}
-
-@app.get("/")
-def home():
-    return {"message": "Inventory service is running"}
+# Dữ liệu kho hàng
+inventory = {
+    "item_1": {"quantity": 10, "price": 10},
+    "item_2": {"quantity": 5, "price": 20},
+    "item_3": {"quantity": 8, "price": 15}
+}
 
 @app.get("/inventory")
-def check_inventory(item: str = None):
-    if item and item not in inventory:
+def get_item(item: str):
+    if item not in inventory:
         raise HTTPException(status_code=404, detail="Item not found")
-    return {"items": list(inventory.keys())}
+    return {"item": item, "quantity": inventory[item]["quantity"], "price": inventory[item]["price"]}
+
+@app.post("/inventory")
+def update_inventory(item: str, quantity: int):
+    if item not in inventory:
+        raise HTTPException(status_code=404, detail="Item not found")
+    if inventory[item]["quantity"] < quantity:
+        raise HTTPException(status_code=400, detail="Not enough stock")
+    inventory[item]["quantity"] -= quantity
+    return {"item": item, "remaining_quantity": inventory[item]["quantity"]}
 
 if __name__ == "__main__":
     import uvicorn

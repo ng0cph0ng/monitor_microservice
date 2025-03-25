@@ -1,0 +1,21 @@
+{
+    "valid": {
+        "user_2": {
+            "balance": 5
+        },
+        "user_5": {
+            "balance": 200
+        }
+    },
+    "invalid": {
+        "user_3": {
+            "balance": 50
+        },
+        "user_4": {
+            "balance": 20
+        },
+        "user_1": {
+            "balance": 70
+        }
+    }
+}

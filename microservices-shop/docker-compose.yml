@@ -13,6 +13,7 @@ services:
       - payment
       - inventory
       - auth
+      - manage_user
     networks:
       - app_network
 
@@ -33,6 +34,8 @@ services:
     container_name: payment
     ports:
       - "8002:8002"
+    volumes:
+      - ./services/users.json:/app/users.json
     networks:
       - app_network
 
@@ -49,6 +52,18 @@ services:
     container_name: auth
     ports:
       - "8004:8004"
+    volumes:
+      - ./services/users.json:/app/users.json
+    networks:
+      - app_network
+
+  manage_user:
+    build: ./services/manage_user
+    container_name: manage_user
+    ports:
+      - "8005:8005"
+    volumes:
+      - ./services/users.json:/app/users.json
     networks:
       - app_network
 

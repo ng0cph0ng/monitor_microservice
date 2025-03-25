@@ -2,35 +2,40 @@ from fastapi import FastAPI, HTTPException
 import requests
 
 app = FastAPI()
-
 AUTH_URL = "http://auth:8004/auth"
 INVENTORY_URL = "http://inventory:8003/inventory"
-PAYMENT_URL = "http://payment:8002/payments"
 
-@app.get("/")
-def home():
-    return {"message": "Order service is running"}
-
-@app.get("/orders")
-def get_orders():
-    return {"orders": ["order1", "order2"]}
+orders = {}  # Lưu đơn hàng
+order_counter = 1  # Biến đếm số lượng đơn hàng
 
 @app.post("/create")
-def create_order(user_id: str, item: str):
-    auth_response = requests.get(AUTH_URL, params={"user_id": user_id})
+def create_order(user_id: str, item: str, quantity: int):
+    global order_counter
 
+    # Xác thực người dùng
+    auth_response = requests.get(AUTH_URL, params={"user_id": user_id})
     if auth_response.status_code != 200:
         raise HTTPException(status_code=403, detail="Authentication failed")
 
-    inventory_response = requests.get(INVENTORY_URL)
+    # Kiểm tra kho hàng
+    inventory_response = requests.post(INVENTORY_URL, params={"item": item, "quantity": quantity})
     if inventory_response.status_code != 200:
-        raise HTTPException(status_code=400, detail="Item out of stock")
+        raise HTTPException(status_code=inventory_response.status_code, detail=inventory_response.json()["detail"])
 
-    payment_response = requests.get(PAYMENT_URL)
-    if payment_response.status_code != 200:
-        raise HTTPException(status_code=402, detail="Payment failed")
+    # Tạo order_id
+    order_id = f"order_{order_counter}"
+    order_counter += 1
 
-    return {"message": f"Order for {item} placed successfully"}
+    # Lưu đơn hàng
+    orders[order_id] = {"user_id": user_id, "item": item, "quantity": quantity, "status": "confirmed"}
+    
+    return {"order_id": order_id, "message": "Order placed successfully"}
+
+@app.get("/orders/{order_id}")
+def get_order(order_id: str):
+    if order_id not in orders:
+        raise HTTPException(status_code=404, detail="Order not found")
+    return orders[order_id]
 
 if __name__ == "__main__":
     import uvicorn
