@@ -1,4 +1,6 @@
 from fastapi import FastAPI, HTTPException
+from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
+from starlette.responses import Response
 
 app = FastAPI()
 
@@ -8,6 +10,10 @@ inventory = {
     "item_2": {"quantity": 5, "price": 20},
     "item_3": {"quantity": 8, "price": 15}
 }
+
+@app.get("/metrics")
+def metrics():
+    return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
 
 @app.get("/inventory")
 def get_item(item: str):

@@ -5,6 +5,12 @@
         },
         "user_5": {
             "balance": 200
+        },
+        "user_6": {
+            "balance": 150
+        },
+        "user_1": {
+            "balance": 70
         }
     },
     "invalid": {
@@ -13,9 +19,6 @@
         },
         "user_4": {
             "balance": 20
-        },
-        "user_1": {
-            "balance": 70
         }
     }
 }

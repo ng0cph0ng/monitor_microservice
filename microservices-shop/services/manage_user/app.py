@@ -1,9 +1,15 @@
 from fastapi import FastAPI, HTTPException
+from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
+from starlette.responses import Response
 import json
 import os
 
 app = FastAPI()
 USER_DATA_FILE = "/app/users.json"
+
+@app.get("/metrics")
+def metrics():
+    return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
 
 def load_users():
     if not os.path.exists(USER_DATA_FILE):
@@ -51,4 +57,4 @@ def change_user_group(user_id: str):
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8005)
-w
+

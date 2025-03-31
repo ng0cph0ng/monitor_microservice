@@ -1,4 +1,6 @@
 from fastapi import FastAPI, HTTPException
+from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
+from starlette.responses import Response
 import requests
 
 app = FastAPI()
@@ -9,6 +11,10 @@ INVENTORY_SERVICE_URL = "http://inventory:8003/inventory"
 # Lưu trạng thái thanh toán của mỗi đơn hàng và số dư của người dùng
 paid_orders = {}
 user_balances = {}
+
+@app.get("/metrics")
+def metrics():
+    return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
 
 @app.get("/payments")
 def process_payment(order_id: str):

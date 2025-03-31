@@ -16,6 +16,7 @@ services:
       - manage_user
     networks:
       - app_network
+      - shared_network
 
   order:
     build: ./services/order
@@ -28,6 +29,7 @@ services:
       - payment
     networks:
       - app_network
+      - shared_network
 
   payment:
     build: ./services/payment
@@ -38,6 +40,7 @@ services:
       - ./services/users.json:/app/users.json
     networks:
       - app_network
+      - shared_network
 
   inventory:
     build: ./services/inventory
@@ -46,6 +49,7 @@ services:
       - "8003:8003"
     networks:
       - app_network
+      - shared_network
 
   auth:
     build: ./services/auth
@@ -56,6 +60,7 @@ services:
       - ./services/users.json:/app/users.json
     networks:
       - app_network
+      - shared_network
 
   manage_user:
     build: ./services/manage_user
@@ -66,8 +71,11 @@ services:
       - ./services/users.json:/app/users.json
     networks:
       - app_network
+      - shared_network
 
 networks:
   app_network:
     driver: bridge
+  shared_network:
+    external: true
 

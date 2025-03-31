@@ -1,4 +1,6 @@
 from fastapi import FastAPI, HTTPException
+from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
+from starlette.responses import Response
 import requests
 
 app = FastAPI()
@@ -7,6 +9,10 @@ INVENTORY_URL = "http://inventory:8003/inventory"
 
 orders = {}  # Lưu đơn hàng
 order_counter = 1  # Biến đếm số lượng đơn hàng
+
+@app.get("/metrics")
+def metrics():
+    return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
 
 @app.post("/create")
 def create_order(user_id: str, item: str, quantity: int):
